@@ -11,17 +11,23 @@
 
 # 🏆 Programa en Go y C++
 
-Este proyecto implementa una multiplicación de matrices utilizando procesos paralelos en C. Se dividen las filas de la matriz resultante entre varios procesos hijos, los cuales realizan la multiplicación de manera independiente y luego combinan los resultados.
+Este proyecto tiene como objetivo comparar el rendimiento entre versiones secuenciales y paralelas de multiplicación de matrices. Incluye implementaciones en C, C++ y Go, así como un script para automatizar pruebas de rendimiento.
 
 ## Archivos del Proyecto
 
 El proyecto contiene los siguientes archivos:
 
-1. **`matrix_multiplication.c`**: Implementa la multiplicación de matrices utilizando múltiples procesos en paralelo.
-2. **`matrix_a.txt`**: Archivo que contiene la primera matriz (A) a multiplicar.
-3. **`matrix_b.txt`**: Archivo que contiene la segunda matriz (B) a multiplicar.
-4. **`matrix_c.txt`**: Archivo de salida donde se guardará el resultado de la multiplicación de matrices.
-5. **`README.md`**: Este archivo, que contiene documentación sobre el proyecto.
+1. **`sequential.cpp`**: Implementación secuencial de la multiplicación de matrices en C++.
+2. **`parallel.c`**: Implementación paralela en C, usando procesos (fork) y memoria compartida (shm).
+3. **`sequential.go`**: Implementación secuencial de multiplicación en lenguaje Go.
+4. **`parallel.go`**: Versión paralela escrita en Go.
+5. **`sequential.x`**: Archivo binario compilado a partir de sequential.cpp.
+6. **`parallel.x`**: Archivo binario compilado a partir de parallel.c.
+7. **`benchmark.sh`**: Script Bash que compila los programas, ejecuta las versiones secuencial y paralela, mide el tiempo de ejecución y calcula el speedup.
+8. **`matrix_a.txt`**: Archivo de texto que contiene la primera matriz a multiplicar (formato: filas, columnas, luego los datos).
+9. **`matrix_b.txt`**: Archivo de texto que contiene la segunda matriz a multiplicar.
+10. **`matrix_c.txt`**: Archivo generado como salida, contiene la matriz resultado de la multiplicación.
+11. **`README.md`**: Este archivo, que contiene documentación sobre el proyecto.
 
 ## Descripción del Proyecto
 
@@ -34,10 +40,16 @@ El proyecto está organizado de la siguiente manera:
 ```
 project/
 │
-├── matrix_multiplication.c  # Código fuente en C para la multiplicación paralela de matrices.
-├── matrix_a.txt             # Archivo de entrada con la matriz A.
-├── matrix_b.txt             # Archivo de entrada con la matriz B.
-├── matrix_c.txt             # Archivo de salida con el resultado de la multiplicación.
+├── sequential.cpp           #Implementación secuencial de la multiplicación de matrices en C++.
+├── parallel.c               #Implementación paralela en C, usando procesos (fork) y memoria compartida (shm)..
+├── sequential.go            #Implementación secuencial de multiplicación en lenguaje Go.
+├── parallel.go              #Versión paralela escrita en Go.
+├── sequential.x             #Archivo binario compilado a partir de sequential.cpp.
+├── parallel.x               #Archivo binario compilado a partir de parallel.c.
+├── benchmark.sh             #Script Bash que compila los programas, ejecuta las versiones secuencial y paralela, mide el tiempo de ejecución y calcula el speedup.
+├── matrix_a.txt             #Archivo de texto que contiene la primera matriz a multiplicar (formato: filas, columnas, luego los datos).
+├── matrix_b.txt             #Archivo de texto que contiene la segunda matriz a multiplicar.
+├── matrix_c.txt             #Archivo generado como salida, contiene la matriz resultado de la multiplicación.
 └── README.md                # Este archivo.
 ```
 
@@ -56,10 +68,16 @@ Para ejecutar este proyecto, necesitas tener un compilador de C y las herramient
 Para compilar el código, abre una terminal y navega hasta el directorio del proyecto. Luego, usa el siguiente comando para compilar el archivo C:
 
 ```bash
-gcc matrix_multiplication.c -o matrix_multiplication -lm
+gcc sequential.cpp -o sequential.x
+gcc parallel.c -o parallel.x
 ```
 
-Este comando compilará el archivo `matrix_multiplication.c` y generará un ejecutable llamado `matrix_multiplication`.
+```bash
+chmod +x benchmark.sh
+./benchmark.sh
+```
+
+Este comando compilará el archivo `sequential.cpp` y `parallel.c` usando gcc, y guarda los binarios como `sequential.x` y `parallel.x`.
 
 ## Ejecución del Proyecto
 
@@ -88,13 +106,15 @@ Ejemplo de `matrix_b.txt`:
 
 ### Paso 2: Ejecutar el programa
 
-Una vez que hayas compilado el código y creado los archivos de entrada, puedes ejecutar el programa con el siguiente comando:
+Una vez que hayas compilado el código y creado los archivos de entrada, puedes ejecutar el programa con los siguientes comandos:
 
 ```bash
-./matrix_multiplication
+./sequential.x
+# o
+./parallel.x
 ```
 
-Este comando ejecutará el programa, realizará la multiplicación de matrices en paralelo y guardará el resultado en `matrix_c.txt`.
+Estos comandos ejecutará el programa, realizará la multiplicación de matrices en paralelo y guardará el resultado en `matrix_c.txt`.
 
 ### Paso 3: Ver el resultado
 
@@ -110,8 +130,8 @@ Después de la ejecución, el resultado de la multiplicación de matrices se gua
 ### Ejemplo de ejecución:
 
 ```
-$ gcc matrix_multiplication.c -o matrix_multiplication -lm
-$ ./matrix_multiplication
+$ gcc sequential.cpp -o sequential.x
+$ ./sequential.x
 Tiempo de ejecución paralela: 0.0123 segundos
 ```
 
@@ -121,7 +141,7 @@ El archivo `matrix_c.txt` contendrá la matriz resultante.
 
 ### `matrix_multiplication.c`
 
-El archivo principal del proyecto es `matrix_multiplication.c`. Este archivo contiene la lógica para realizar la multiplicación de matrices de manera paralela utilizando procesos hijos. A continuación, se describen las principales funciones en el archivo:
+El archivo principal del proyecto es `matrix_c.txt`. Este archivo contiene la lógica para realizar la multiplicación de matrices de manera paralela utilizando procesos hijos. A continuación, se describen las principales funciones en el archivo:
 
 1. **`load_matrix`**: Carga una matriz desde un archivo de texto. Lee las dimensiones de la matriz y luego llena la matriz con los valores leídos.
    
@@ -141,8 +161,24 @@ Para optimizar la ejecución, el programa utiliza memoria compartida para almace
 
 El trabajo se divide entre varios procesos hijos, donde cada proceso maneja una porción de las filas de la matriz resultante. Esta división se realiza de manera equitativa, asegurando que cada proceso tenga una carga de trabajo similar.
 
-## Conclusiones
+## ✅Conclusiones
 
-Este proyecto demuestra cómo realizar la multiplicación de matrices de manera eficiente utilizando programación paralela en C. El uso de procesos y memoria compartida mejora significativamente el tiempo de ejecución al distribuir la carga de trabajo entre múltiples núcleos de la CPU.
+1. Paralelismo mejora el rendimiento significativamente
+La versión paralela, implementada en C usando fork() y memoria compartida (shmget), demostró una reducción notable en el tiempo de ejecución al distribuir el trabajo entre varios procesos. Esto confirma que dividir tareas en múltiples núcleos es una estrategia eficiente para operaciones intensivas como la multiplicación de matrices.
+
+2. El uso de memoria compartida fue clave
+La correcta sincronización mediante memoria compartida permitió que todos los procesos hijos escribieran en la misma matriz resultado sin necesidad de mecanismos complejos de comunicación, logrando una implementación paralela funcional y coherente.
+
+3. La versión secuencial es útil como línea base
+La implementación secuencial permite comparar el rendimiento base del algoritmo sin paralelismo. Es esencial para calcular el speedup y validar la corrección de la versión paralela.
+
+4. El script benchmark.sh facilita las pruebas y análisis
+Automatizar la compilación, ejecución, medición de tiempos y cálculo de speedup permitió un análisis más claro y reproducible del comportamiento de ambas versiones.
+
+5. Escalabilidad limitada por el número de filas y procesos
+Si el número de filas de la matriz no es divisible equitativamente entre los procesos, uno de ellos terminará trabajando más que los otros. A mayor tamaño de matrices y procesos, se podrían investigar técnicas de balance de carga más avanzadas.
+
+6. Potencial para extenderse a otras plataformas o lenguajes
+El diseño modular del proyecto (archivos separados, entrada/salida clara, script automatizado) permite fácilmente portar o extender la solución a otros lenguajes como Go o Python, o incluso paralelismo con hilos en lugar de procesos.
 
 ---
